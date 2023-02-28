@@ -11,7 +11,7 @@ Here's how this project is getting started.
 - 🔲 Visualize Test Results
 - 🔲 Visualize Code Coverage
 
-### ✅ Task Start Proof of Concept (XPP Steps 1-5) (in-progress)
+### ✅ Task: Start Proof of Concept (XPP Steps 1-5) (in-progress)
 
 1. ✅ Add .vscode folder with `extensions.json` file to contain a list of recommended VSCode extensions for this project.
 2. ✅ Update `.gitignore` file with `dotnet new gitignore --force`
@@ -25,6 +25,18 @@ Here's how this project is getting started.
 10. ✅ Run `dotnet watch test`, start doing some TDD
 11. ✅ Rename `UnitTest1` to `TaskService.Tests` and start coding
 12. ✅ Check Probelms tab in VSCode for any issues.
+
+### 🔲 Task: Build Pipeline
+
+Make sure to update README.md as nyou are moving through the tasks.
+
+1. Go to the GitHub Actions tab and create a new workflow for .Net. Reference the [GitHub Actions for .Net](https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net) documentation.
+2. Create new workflow file in `.github/workflows/tasks-ci.yml`
+3. Check Problems tab in VSCode for any issues.
+
+### 🔲 Task: Visualize Test Results
+
+### 🔲 Task: Visualize Code Coverage
 
 ## Contributing
 
