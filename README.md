@@ -7,9 +7,12 @@ A repository for the age-old example use-case of a To-Do or Task application wri
 Here's how this project is getting started.
 
 - ✅ Initial Red-Green-Refactor
-- 🔲 Build Pipeline
-- 🔲 Visualize Test Results
-- 🔲 Visualize Code Coverage
+- ✅ Build Pipeline
+- ✅ Visualize Test Results
+- ⏸️ Visualize Code Coverage (holding off until can expand on how this can be used)
+- 🔲 API Red-Green-Refactor
+- 🔲 Task: API Red-Green-Refactor
+- 🔲 Task: Create Task Red-Green-Refactor
 
 ### ✅ Task: Start Proof of Concept (XPP Steps 1-5) (in-progress)
 
@@ -26,7 +29,7 @@ Here's how this project is getting started.
 11. ✅ Rename `UnitTest1` to `TaskService.Tests` and start coding
 12. ✅ Check Probelms tab in VSCode for any issues.
 
-### 🔲 Task: Build Pipeline
+### ✅ Task: Build Pipeline
 
 Make sure to update README.md as nyou are moving through the tasks.
 
@@ -34,9 +37,61 @@ Make sure to update README.md as nyou are moving through the tasks.
 2. Create new workflow file in `.github/workflows/tasks-ci.yml`
 3. Check Problems tab in VSCode for any issues.
 
-### 🔲 Task: Visualize Test Results
+### ✅ Task: Visualize Test Results
+
+Using [dorny/test-reporter](https://github.com/dorny/test-reporter) to visualize test results. Looked at other actions, but this one has support for multiple tests.
+
+```yml
+    - name: Test
+      run: dotnet test $PROJECT --no-build --verbosity normal -c $RELEASE --logger "trx;LogFileName=test-results.trx"
+
+    - name: Test Report
+      uses: dorny/test-reporter@v1
+      if: always()
+      with:
+        name: .Net Unit Tests
+        path: "**/test-results.trx"
+        reporter: dotnet-trx
+        fail-on-error: true
+```
+
+Need to add permissions section to the workflow file to let it provide an update via GitHub Checks API.
+
+```yml
+permissions:
+  statuses: write
+  checks: write
+```
 
 ### 🔲 Task: Visualize Code Coverage
+
+Holding off until can expand on how this can be used. If code coverage exposes uncovered code paths, that could be pointing to a potential gap.
+If code coverage shows 100% code coverage, however, it does not mean the tests are effective. Putting the code into production will be needed to
+identify any gaps in coverage.
+
+### 🔲 Task: API Red-Green-Refactor
+
+1. 🔲 Add capability (playwright)
+  - 🔲 Sanity Test (local)
+  - 🔲 Sanity Test (pipeline)
+2. 🔲 UI Test for Developer Portal (local)
+  - 🔲 UI Integration Test (red)
+  - 🔲 Add API Project locally (green)
+  - 🔲 Refactor locally
+3. 🔲 UI Test for Developer Portal (production)
+  - 🔲 UI Integration Test (red)
+  - 🔲 Deploy Developer Portal (green)
+  - 🔲 Refactor
+
+
+### 🔲 Task: Create Task Red-Green-Refactor
+
+1. 🔲 API Test (red-green-refactor)
+  - 🔲 UI Integration Test (red)
+  - 🔲 Expose endpoint locally (green)
+  - 🔲 Refactor locally
+  - 🔲 Publish & production tests should pass
+  - 🔲 Refactor
 
 ## Contributing
 
