@@ -34,4 +34,13 @@ jobs:
       run: dotnet build $PROJECT --no-restore -c $RELEASE
 
     - name: Test
-      run: dotnet test $PROJECT --no-build --verbosity normal -c $RELEASE
+      run: dotnet test $PROJECT --no-build --verbosity normal -c $RELEASE --logger "trx;LogFileName=test-results.trx"
+
+    - name: Test Report
+      uses: dorny/test-reporter@v1
+      if: always()
+      with:
+        name: .Net Unit Tests
+        path: "**/test-results.trx"
+        reporter: dotnet-trx
+        fail-on-error: true
