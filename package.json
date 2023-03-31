@@ -1,0 +1,13 @@
+{
+  "name": "tasks-dotnet",
+  "version": "1.0.0",
+  "description": "A repository for the age-old example use-case of a To-Do or Task application written in Microsoft's .Net framework using [Clean Coding](cleancoders.com) practices and [Extreme Programming (XP)](https://martinfowler.com/bliki/ExtremeProgramming.html) principles.",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.32.1"
+  }
+}
