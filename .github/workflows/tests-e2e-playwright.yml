@@ -1,9 +1,7 @@
-name: 'Tasks UI Tests'
+name: End-to-End Tests (Playwright)
+
 on:
-  workflow_run:
-    workflows: ['Tasks CI']
-    types:
-      - completed
+  workflow_call:
   workflow_dispatch:
 
 jobs:

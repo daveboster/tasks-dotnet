@@ -48,3 +48,6 @@ jobs:
         path: "**/test-results.trx"
         reporter: dotnet-trx
         fail-on-error: true
+
+  tests_e2e:
+    uses: ./.github/workflows/tests-e2e-playwright.yml
