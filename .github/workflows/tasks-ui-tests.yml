@@ -1,11 +1,10 @@
-name: Playwright Tests
+name: 'Tasks UI Tests'
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  workflow_run:
+    workflows: ['Tasks CI']
+    types:
+      - completed
   workflow_dispatch:
-
 
 jobs:
   test:
@@ -17,7 +16,7 @@ jobs:
     - uses: actions/setup-node@v3
       with:
         node-version: 16
-        
+
     - name: Install dependencies
       run: npm ci
 
