@@ -71,9 +71,26 @@ identify any gaps in coverage.
 
 ### 🔲 Task: API Red-Green-Refactor
 
-1. 🔲 Add capability (playwright)
+1. 🔲 Add capability ([playwright](https://playwright.dev))
   - 🔲 Sanity Test (local)
   - 🔲 Sanity Test (pipeline)
+
+[Installing Playwright](https://playwright.dev/docs/intro#installing-playwright)
+
+```shell
+npm init playwright@latest
+```
+
+Using TypeScript, `tests` directory, add GitHub workflow `playwright.yml`.
+
+Update `playwright.config.ts` and removed Safari and Firefox (for now).
+
+`npx playwrght test` (all passes)
+
+Clean-up `playwright.yml` branch names, spacing, and add workflow dispatch.
+Clean-up `.gitignore`.
+Push too branch and open PR 🤞.
+
 2. 🔲 UI Test for Developer Portal (local)
   - 🔲 UI Integration Test (red)
   - 🔲 Add API Project locally (green)
