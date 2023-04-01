@@ -19,8 +19,14 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
+
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  reporter: process.env.CI ? 'github' : [
+    ['list'],
+    ['html', { open: 'never' }],
+    ['json', { outputFile: 'playwright-report/test-results.json' }]
+  ],
+
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
@@ -33,7 +39,13 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
-      name: 'chromium',
+      name: 'Examples',
+      testMatch: /.*example.spec.ts/,
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'Tasks API - E2E',
+      testMatch: /.*.e2e.spec.ts/,
       use: { ...devices['Desktop Chrome'] },
     },
 
@@ -70,8 +82,8 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   // webServer: {
-  //   command: 'npm run start',
-  //   url: 'http://127.0.0.1:3000',
+  //   command: 'dotnet run --project src/TasksApi/TasksApi.csproj',
+  //   url: 'http://localhost:5244',
   //   reuseExistingServer: !process.env.CI,
   // },
 });
