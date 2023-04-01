@@ -44,7 +44,7 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
     {
-      name: 'Tasks API - E2E',
+      name: 'TasksAPI-E2E',
       testMatch: /.*.e2e.spec.ts/,
       use: { ...devices['Desktop Chrome'] },
     },

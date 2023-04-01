@@ -5,6 +5,10 @@
       // C# extension
       "ms-dotnettools.csharp",
 
+      // Jupyter notebooks
+      "ms-dotnettools.dotnet-interactive-vscode",
+      "ms-toolsai.jupyter",
+
       // Evaluating
       // Markdown Linter
       "DavidAnson.vscode-markdownlint",
