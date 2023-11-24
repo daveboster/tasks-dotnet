@@ -124,7 +124,7 @@ jobs:
     - name: Create a NuGet package
       shell: pwsh
       run: |
-        dotnet pack ${{ env.project-file }} --configuration ${{ env.configuration }} --no-build -p:PackageId=${{ steps.build.outputs.package_id }} -p:PackageVersion=${{ steps.build-info.outputs.version }} -p:Authors="Dave Boster" --verbosity detailed --output ./packaging
+        dotnet pack ${{ env.project-file }} --configuration ${{ env.configuration }} --no-build --no-restore -p:PackageId=${{ steps.build.outputs.package_id }} -p:PackageVersion=${{ steps.build-info.outputs.version }} -p:Authors="Dave Boster" --verbosity detailed --output ./packaging -p:OutputPath=${{ steps.build.outputs.output }}
 
     - name: Upload Zip package to build artifacts 🗳️
       if: ${{ matrix.publish }}
