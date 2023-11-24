@@ -41,7 +41,7 @@ jobs:
         include:
           - os: ubuntu-latest
             dotnet: '7.x'
-            publish: true
+            publish: ${{ (github.event_name == 'push' && github.ref == 'ref/head/main') || (github.event_name == 'pull_request' && github.event.action != 'closed') }}
 
     steps:
     - uses: actions/checkout@v3
@@ -92,6 +92,7 @@ jobs:
         fail-on-error: true
     
     - name: Create a Zip package 🐙
+      if: ${{ matrix.publish }}
       id: create-zip-package
       uses: OctopusDeploy/create-zip-package-action@v3
       with:
@@ -103,6 +104,7 @@ jobs:
           **/*.*
 
     - name: Create a NuGet package 🐙
+      if: ${{ matrix.publish }}
       id: create-nuget-package
       uses: OctopusDeploy/create-nuget-package-action@v3
       with:
@@ -117,6 +119,7 @@ jobs:
           Dave Boster
 
     - name: Upload Zip package to build artifacts 🗳️
+      if: ${{ matrix.publish }}
       uses: actions/upload-artifact@v3
       with:
         name: ${{ steps.create-zip-package.outputs.package_filename }}
@@ -124,6 +127,7 @@ jobs:
         retention-days: 1
 
     - name: Upload NuGet package to build artifacts 🗳️
+      if: ${{ matrix.publish }}
       uses: actions/upload-artifact@v3
       with:
         name: ${{ steps.create-nuget-package.outputs.package_filename }}
