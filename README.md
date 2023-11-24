@@ -71,9 +71,45 @@ identify any gaps in coverage.
 
 ### 🔲 Task: API Red-Green-Refactor
 
-1. 🔲 Add capability (playwright)
+1. 🔲 Add capability ([playwright](https://playwright.dev))
   - 🔲 Sanity Test (local)
   - 🔲 Sanity Test (pipeline)
+
+[Installing Playwright](https://playwright.dev/docs/intro#installing-playwright)
+
+```shell
+npm init playwright@latest
+```
+
+Using TypeScript, `tests` directory, add GitHub workflow `playwright.yml`.
+
+Update `playwright.config.ts` and removed Safari and Firefox (for now).
+
+`npx playwrght test` (all passes)
+
+Clean-up `playwright.yml` branch names, spacing, and add workflow dispatch.
+Clean-up `.gitignore`.
+Push too branch and open PR 🤞.
+
+Note: After running on new machine,
+```bash
+$ npm run tasksapi:test
+> tasks-dotnet@1.0.0 tasksapi:test
+> npx playwright test --project=TasksAPI-E2E
+
+Need to install the following packages:
+  playwright@1.32.1
+Ok to proceed? (y) y
+Please install @playwright/test package to use Playwright Test.
+  npm install -D @playwright/test
+
+$ npm run tasksapi:test
+
+$ npm install -D @playwright/test
+added 4 packages, and audited 5 packages in 2s
+found 0 vulnerabilities
+```
+
 2. 🔲 UI Test for Developer Portal (local)
   - 🔲 UI Integration Test (red)
   - 🔲 Add API Project locally (green)

@@ -1,0 +1,20 @@
+{
+  "name": "tasks-dotnet",
+  "version": "1.0.0",
+  "description": "A repository for the age-old example use-case of a To-Do or Task application written in Microsoft's .Net framework using [Clean Coding](cleancoders.com) practices and [Extreme Programming (XP)](https://martinfowler.com/bliki/ExtremeProgramming.html) principles.",
+  "main": "index.js",
+  "scripts": {
+    "examples:test": "npx playwright test --project=Examples",
+    "tasks:build": "dotnet build src/Tasks/",
+    "tasks:test": "dotnet test src/Tasks/",
+    "tasksapi:build": "dotnet build src/TasksApi/",
+    "tasksapi:run": "dotnet run --project src/TasksApi/TasksApi.csproj",
+    "tasksapi:test": "npx playwright test --project=TasksAPI-E2E"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.32.1"
+  }
+}
