@@ -95,7 +95,7 @@ jobs:
         fail-on-error: true
     
     - name: Create a Zip package 🐙
-      if: ${{ matrix.publish }}
+      # if: ${{ matrix.publish }}
       id: create-zip-package
       uses: OctopusDeploy/create-zip-package-action@v3
       with:
