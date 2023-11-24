@@ -65,7 +65,13 @@ jobs:
       run: dotnet restore $PROJECT
 
     - name: Build
-      run: dotnet build $PROJECT --no-restore -c $RELEASE /p:Version=${{ steps.build-info.outputs.version }}
+      id: build
+      shell: pwsh
+      run: |
+        dotnet build $PROJECT --no-restore -c $RELEASE /p:Version=${{ steps.build-info.outputs.version }} -o $env:GITHUB_WORKSPACE/build
+        [System.Reflection.Assembly]::LoadFrom("./src/Tasks/bin/Release/").GetName().Version
+        echo "package_id=Boster.Training.Tasks.DotNet" >> $env:GITHUB_OUTPUT
+        echo "output=$env:GITHUB_WORKSPACE/build" >> $env:GITHUB_OUTPUT
 
     - name: Test
       run: dotnet test $PROJECT --no-build --verbosity normal -c $RELEASE /p:Version=${{ steps.build-info.outputs.version }} --logger "trx;LogFileName=test-results.trx"
@@ -78,6 +84,17 @@ jobs:
         path: "**/test-results.trx"
         reporter: dotnet-trx
         fail-on-error: true
+    
+    - name: Create a Zip package 🐙
+      uses: OctopusDeploy/create-zip-package-action@v3
+      with:
+        package_id: ${{ steps.build.outputs.package_id }}
+        version: ${{ steps.build-info.outputs.version }}
+        output_folder: './packaging'
+        base_path: ${{ steps.build.outputs.output }}
+        files: |
+          **/*.*
 
+      
 #  tests_e2e:
 #    uses: ./.github/workflows/tests-e2e-playwright.yml
