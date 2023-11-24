@@ -122,7 +122,7 @@ jobs:
           Dave Boster
 
     - name: Upload Zip package to build artifacts 🗳️
-      if: ${{ matrix.publish }}
+      # if: ${{ matrix.publish }}
       uses: actions/upload-artifact@v3
       with:
         name: ${{ steps.create-zip-package.outputs.package_filename }}
