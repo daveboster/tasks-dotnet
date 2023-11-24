@@ -41,7 +41,10 @@ jobs:
         include:
           - os: ubuntu-latest
             dotnet: '7.x'
-            publish: ${{ (github.event_name == 'push' && github.ref == 'ref/head/main') || (github.event_name == 'pull_request' && github.event.action != 'closed') }}
+            package: true # ${{ (github.event_name == 'pull_request' && github.event.action != 'closed') }}
+    outputs:
+      zip_package_artifact: ${{ steps.create-zip-package.outputs.package_filename }}
+      nuget_package_artifact: ${{ steps.create-nuget-package.outputs.package_filename }}
 
     steps:
     - uses: actions/checkout@v3
@@ -133,5 +136,24 @@ jobs:
         name: ${{ steps.create-nuget-package.outputs.package_filename }}
         path: ${{ steps.create-nuget-package.outputs.package_file_path }}
         retention-days: 1
+
+  publish:
+    # if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    needs: build
+    name: Publish Packages
+    steps:
+      - name: Download zip package
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ needs.build.outputs.zip_package_artifact }}
+          path: './packaging'
+
+      - name: Download NuGet package
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ needs.build.outputs.zip_package_artifact }}
+          path: './packaging'
+      
 #  tests_e2e:
 #    uses: ./.github/workflows/tests-e2e-playwright.yml
