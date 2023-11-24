@@ -65,7 +65,7 @@ jobs:
 
     - name: Restore dependencies
       shell: pwsh
-      run: dotnet restore ${{ env.project }}
+      run: dotnet restore ${{ env.project-file }}
 
     - name: Build
       id: build
