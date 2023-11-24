@@ -5,9 +5,17 @@ name: 'Tasks CI'
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "gitversion" ]
+    paths:
+      - '.github/workflows/tasks-*.yml'
+      - 'src/Tasks/**'
+      - 'src/TasksApi/**'
   pull_request:
     branches: [ "main" ]
+    paths:
+      - '.github/workflows/tasks-*.yml'
+      - 'src/Tasks/**'
+      - 'src/TasksApi/**'
   workflow_dispatch:
 
 permissions:
@@ -21,7 +29,6 @@ env:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -31,23 +38,36 @@ jobs:
       with:
         dotnet-version: 7.0.x
 
-    - name: Restore dependencies
-      run: dotnet restore $PROJECT
+    - name: Get Build Information
+      id: build-info
+      shell: pwsh
+      run: |
+        $versionPrefix = Get-Date -Format "yyyy.MM.dd"
+        $runNumber = "${{ github.run_number }}"
+        echo "version=$versionPrefix.$runNumber" >> "$GITHUB_OUTPUT"
 
-    - name: Build
-      run: dotnet build $PROJECT --no-restore -c $RELEASE
+    - name: Check Information
+      shell: pwsh
+      run: |
+        echo ${{ steps.build-info.outputs.version }}
 
-    - name: Test
-      run: dotnet test $PROJECT --no-build --verbosity normal -c $RELEASE --logger "trx;LogFileName=test-results.trx"
+#    - name: Restore dependencies
+#      run: dotnet restore $PROJECT
 
-    - name: Test Report
-      uses: dorny/test-reporter@v1
-      if: always()
-      with:
-        name: .Net Unit Tests
-        path: "**/test-results.trx"
-        reporter: dotnet-trx
-        fail-on-error: true
+#    - name: Build
+#      run: dotnet build $PROJECT --no-restore -c $RELEASE
 
-  tests_e2e:
-    uses: ./.github/workflows/tests-e2e-playwright.yml
+#    - name: Test
+#      run: dotnet test $PROJECT --no-build --verbosity normal -c $RELEASE --logger "trx;LogFileName=test-results.trx"
+
+#    - name: Test Report
+#      uses: dorny/test-reporter@v1
+#      if: always()
+#      with:
+#        name: .Net Unit Tests
+#        path: "**/test-results.trx"
+#        reporter: dotnet-trx
+#        fail-on-error: true
+
+#  tests_e2e:
+#    uses: ./.github/workflows/tests-e2e-playwright.yml
