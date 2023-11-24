@@ -95,7 +95,7 @@ jobs:
         fail-on-error: true
     
     - name: Create a Zip package 🐙
-      # if: ${{ matrix.publish }}
+      if: ${{ matrix.publish }}
       id: create-zip-package
       uses: OctopusDeploy/create-zip-package-action@v3
       with:
@@ -106,23 +106,28 @@ jobs:
         files: |
           **/*.*
 
-    - name: Create a NuGet package 🐙
-      if: ${{ matrix.publish }}
-      id: create-nuget-package
-      uses: OctopusDeploy/create-nuget-package-action@v3
-      with:
-        package_id: ${{ steps.build.outputs.package_id }}
-        version: ${{ steps.build-info.outputs.version }}
-        output_folder: './packaging'
-        base_path: ${{ steps.build.outputs.output }}
-        files: |
-          **/*.*
-        nuspec_description:  description
-        nuspec_authors: |
-          Dave Boster
+    # - name: Create a NuGet package 🐙
+    #   if: ${{ matrix.publish }}
+    #   id: create-nuget-package
+    #   uses: OctopusDeploy/create-nuget-package-action@v3
+    #   with:
+    #     package_id: ${{ steps.build.outputs.package_id }}
+    #     version: ${{ steps.build-info.outputs.version }}
+    #     output_folder: './packaging'
+    #     base_path: ${{ steps.build.outputs.output }}
+    #     files: |
+    #       **/*.*
+    #     nuspec_description:  description
+    #     nuspec_authors: |
+    #       Dave Boster
+    
+    - name: Create a NuGet package
+      shell: pwsh
+      run: |
+        dotnet pack ${{ env.project-file }} --configuration ${{ env.configuration }} --no-build -p:PackageId=${{ steps.build.outputs.package_id }} -p:PackageVersion=${{ steps.build-info.outputs.version }} -p:Authors="Dave Boster" --verbosity detailed --output ./packaging
 
     - name: Upload Zip package to build artifacts 🗳️
-      # if: ${{ matrix.publish }}
+      if: ${{ matrix.publish }}
       uses: actions/upload-artifact@v3
       with:
         name: ${{ steps.create-zip-package.outputs.package_filename }}
