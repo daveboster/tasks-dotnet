@@ -24,19 +24,29 @@ permissions:
 
 # https://docs.github.com/en/actions/learn-github-actions/variables
 env:
-  PROJECT: src/Tasks
+  PROJECT: src/Tasks/Tasks.csproj
   RELEASE: Release
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: Build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest] # [ubuntu-latest, windows-latest]
+        dotnet: ['7.x']
+        include:
+          - os: ubuntu-latest
+            dotnet: '7.x'
+            publish: true
 
     steps:
     - uses: actions/checkout@v3
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 7.0.x
+        dotnet-version: ${{ matrix.dotnet }}
 
     - name: Get Build Information
       id: build-info
@@ -51,23 +61,23 @@ jobs:
       run: |
         echo ${{ steps.build-info.outputs.version }}
 
-#    - name: Restore dependencies
-#      run: dotnet restore $PROJECT
+    - name: Restore dependencies
+      run: dotnet restore $PROJECT
 
-#    - name: Build
-#      run: dotnet build $PROJECT --no-restore -c $RELEASE
+    - name: Build
+      run: dotnet build $PROJECT --no-restore -c $RELEASE /p:Version=${{ steps.build-info.outputs.version }}
 
-#    - name: Test
-#      run: dotnet test $PROJECT --no-build --verbosity normal -c $RELEASE --logger "trx;LogFileName=test-results.trx"
+    - name: Test
+      run: dotnet test $PROJECT --no-build --verbosity normal -c $RELEASE /p:Version=${{ steps.build-info.outputs.version }} --logger "trx;LogFileName=test-results.trx"
 
-#    - name: Test Report
-#      uses: dorny/test-reporter@v1
-#      if: always()
-#      with:
-#        name: .Net Unit Tests
-#        path: "**/test-results.trx"
-#        reporter: dotnet-trx
-#        fail-on-error: true
+    - name: Test Report
+      uses: dorny/test-reporter@v1
+      if: always()
+      with:
+        name: .Net Unit Tests
+        path: "**/test-results.trx"
+        reporter: dotnet-trx
+        fail-on-error: true
 
 #  tests_e2e:
 #    uses: ./.github/workflows/tests-e2e-playwright.yml
