@@ -68,13 +68,14 @@ jobs:
       id: build
       shell: pwsh
       run: |
-        dotnet build $PROJECT --no-restore -c $RELEASE /p:Version=${{ steps.build-info.outputs.version }} -o $env:GITHUB_WORKSPACE/build
-        [System.Reflection.Assembly]::LoadFrom("./src/Tasks/bin/Release/").GetName().Version
+        dotnet build $PROJECT --no-restore --configuration ${{ env.RELEASE }} /p:Version=${{ steps.build-info.outputs.version }} -o $env:GITHUB_WORKSPACE/build
+        [System.Reflection.Assembly]::LoadFrom("./src/Tasks/bin/${{ env.RELEASE }}/").GetName().Version
         echo "package_id=Boster.Training.Tasks.DotNet" >> $env:GITHUB_OUTPUT
         echo "output=$env:GITHUB_WORKSPACE/build" >> $env:GITHUB_OUTPUT
 
     - name: Test
-      run: dotnet test $PROJECT --no-build --verbosity normal -c $RELEASE /p:Version=${{ steps.build-info.outputs.version }} --logger "trx;LogFileName=test-results.trx"
+      shell: pwsh
+      run: dotnet test $PROJECT --no-build --verbosity normal --configuration  ${{ env.RELEASE }} /p:Version=${{ steps.build-info.outputs.version }} --logger "trx;LogFileName=test-results.trx"
 
     - name: Test Report
       uses: dorny/test-reporter@v1
