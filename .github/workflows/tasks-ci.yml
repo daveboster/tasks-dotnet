@@ -76,10 +76,11 @@ jobs:
         [System.Reflection.Assembly]::LoadFrom("${{ env.build-output }}/${{ env.project }}/${{ env.project }}.dll").GetName().Version
         echo "package_id=${{ env.project-package-id }}" >> $env:GITHUB_OUTPUT
         echo "output=${{ env.build-output }}/${{ env.project }}" >> $env:GITHUB_OUTPUT
+        echo "output_assembly=${{ env.build-output }}/${{ env.project }}/${{ env.project }}.dll" >> $env:GITHUB_OUTPUT
 
     - name: Test
       shell: pwsh
-      run: dotnet test ${{ env.project-file }} --no-build --verbosity normal --configuration ${{ env.configuration }} /p:Version=${{ steps.build-info.outputs.version }} --logger "trx;LogFileName=test-results.trx"
+      run: dotnet test ${{ steps.build.outputs.output_assembly }} --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx"
 
     - name: Test Report
       uses: dorny/test-reporter@v1
