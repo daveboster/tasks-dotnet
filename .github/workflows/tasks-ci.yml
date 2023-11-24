@@ -158,12 +158,12 @@ jobs:
       - name: Prep packages
         shell: pwsh
         run: |
-          dotnet nuget add source --username $env:GITHUB_REPOSITORY_OWNER --password ${{ secrets.PACKAGE_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/$($env:GITHUB_REPOSITORY_OWNER)/index.json"
+          dotnet nuget add source --username ${{ github.repository_owner }} --password ${{ secrets.PACKAGE_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
 
       - name: Push package to GitHub packages 
         shell: pwsh
         run: |
-          run: dotnet nuget push ${{ needs.build.outputs.zip_package_artifact }} --api-key ${{ secrets.PACKAGE_TOKEN }}  --source "github"
+          dotnet nuget push ${{ needs.build.outputs.zip_package_artifact }} --api-key ${{ secrets.PACKAGE_TOKEN }}  --source "github"
     
 #  tests_e2e:
 #    uses: ./.github/workflows/tests-e2e-playwright.yml
