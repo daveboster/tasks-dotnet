@@ -28,7 +28,8 @@ env:
   project-file: src/Tasks/Tasks.csproj
   project-package-id: Boster.Training.Tasks.DotNet
   configuration: Release
-  build-output: ${{ github.workspace }}/build 
+  build-output: ${{ github.workspace }}/build
+  package-output: ${{ github.workspace }}/packaging 
 
 jobs:
   build:
@@ -83,7 +84,8 @@ jobs:
 
     - name: Test
       shell: pwsh
-      run: dotnet test ${{ steps.build.outputs.output_assembly }} --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx"
+      run: |
+        dotnet test ${{ steps.build.outputs.output_assembly }} --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx"
 
     - name: Test Report
       uses: dorny/test-reporter@v1
@@ -95,7 +97,7 @@ jobs:
         fail-on-error: true
     
     - name: Create a Zip package 🐙
-      if: ${{ matrix.publish }}
+      if: ${{ matrix.package }}
       id: create-zip-package
       uses: OctopusDeploy/create-zip-package-action@v3
       with:
@@ -122,12 +124,16 @@ jobs:
     #       Dave Boster
     
     - name: Create a NuGet package
+      id: create-nuget-package
+      if: ${{ matrix.package }}
       shell: pwsh
       run: |
         dotnet pack ${{ env.project-file }} --configuration ${{ env.configuration }} --no-build --no-restore -p:PackageId=${{ steps.build.outputs.package_id }} -p:PackageVersion=${{ steps.build-info.outputs.version }} -p:Authors="Dave Boster" --verbosity detailed --output ./packaging -p:OutputPath=${{ steps.build.outputs.output }}
+        echo "package_filename=$${{ steps.build.outputs.package_id }}.${{ steps.build-info.outputs.version }}.nupkg" >> $env:GITHUB_OUTPUT
+        echo "package_file_path=$${{ steps.build.outputs.package_id }}.${{ steps.build-info.outputs.version }}.nupkg" >> $env:GITHUB_OUTPUT
 
     - name: Upload Zip package to build artifacts 🗳️
-      if: ${{ matrix.publish }}
+      if: ${{ matrix.package }}
       uses: actions/upload-artifact@v3
       with:
         name: ${{ steps.create-zip-package.outputs.package_filename }}
@@ -135,7 +141,7 @@ jobs:
         retention-days: 1
 
     - name: Upload NuGet package to build artifacts 🗳️
-      if: ${{ matrix.publish }}
+      if: ${{ matrix.package }}
       uses: actions/upload-artifact@v3
       with:
         name: ${{ steps.create-nuget-package.outputs.package_filename }}
