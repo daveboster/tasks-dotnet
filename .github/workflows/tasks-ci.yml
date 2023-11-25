@@ -115,7 +115,7 @@ jobs:
     - name: Push package to GitHub packages 
       shell: pwsh
       run: |
-        dotnet nuget push ./packaging/${{ steps.create-nuget-package.outputs.package_filename  }} --api-key ${{ secrets.PACKAGE_TOKEN }}  --source "github"
+        dotnet nuget push ./packaging/${{ steps.create-nuget-package.outputs.package_filename  }} --api-key ${{ secrets.PACKAGE_TOKEN }}  --source "github" --skip-duplicate
 
     
     # - name: Create a Zip package 🐙
