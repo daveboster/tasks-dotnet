@@ -75,7 +75,7 @@ jobs:
       id: build
       shell: pwsh
       run: |
-        dotnet build ${{ env.project-file }} --no-restore --configuration ${{ env.configuration }} /p:Version=${{ steps.build-info.outputs.version }} --output ${{ env.build-output }}/${{ env.project }}
+        dotnet build ${{ env.project-file }} --no-restore --configuration ${{ env.configuration }} -p:GenerateRuntimeConfigurationFiles=true -p:Version=${{ steps.build-info.outputs.version }} --output ${{ env.build-output }}/${{ env.project }}
         [System.Reflection.Assembly]::LoadFrom("${{ env.build-output }}/${{ env.project }}/${{ env.project }}.dll").GetName().Version
         echo "package_id=${{ env.project-package-id }}" >> $env:GITHUB_OUTPUT
         echo "output=${{ env.build-output }}/${{ env.project }}" >> $env:GITHUB_OUTPUT
