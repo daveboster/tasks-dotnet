@@ -63,7 +63,7 @@ jobs:
         $versionPrefix = Get-Date -Format "yyyy.MM.dd"
         $runNumber = "${{ github.run_number }}"
         echo "version=$versionPrefix.$runNumber"
-        echo "2023.11.25.55" >> $env:GITHUB_OUTPUT
+        echo "version=2023.11.25.55" >> $env:GITHUB_OUTPUT
 
     - name: Check Information
       shell: pwsh
