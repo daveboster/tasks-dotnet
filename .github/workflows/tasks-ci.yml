@@ -163,7 +163,7 @@ jobs:
       - name: Download NuGet package
         uses: actions/download-artifact@v3
         with:
-          name: ${{ needs.build.outputs.zip_package_artifact }}
+          name: ${{ needs.build.outputs.nuget_package_artifact }}
           path: './packaging'
 
       - name: Prep packages
