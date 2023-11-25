@@ -21,6 +21,7 @@ on:
 permissions:
   statuses: write
   checks: write
+  packages: write
 
 # https://docs.github.com/en/actions/learn-github-actions/variables
 env:
@@ -44,7 +45,7 @@ jobs:
             dotnet: '7.x'
             package: true # ${{ (github.event_name == 'pull_request' && github.event.action != 'closed') }}
     outputs:
-      zip_package_artifact: ${{ steps.create-zip-package.outputs.package_filename }}
+      # zip_package_artifact: ${{ steps.create-zip-package.outputs.package_filename }}
       nuget_package_artifact: ${{ steps.create-nuget-package.outputs.package_filename }}
 
     steps:
@@ -61,7 +62,9 @@ jobs:
       run: |
         $versionPrefix = Get-Date -Format "yyyy.MM.dd"
         $runNumber = "${{ github.run_number }}"
-        echo "version=$versionPrefix.$runNumber" >> $env:GITHUB_OUTPUT
+        echo "2023.11.25.55" >> $env:GITHUB_OUTPUT
+        
+    # echo "version=$versionPrefix.$runNumber" >> $env:GITHUB_OUTPUT
 
     - name: Check Information
       shell: pwsh
@@ -95,18 +98,47 @@ jobs:
         path: "**/test-results.trx"
         reporter: dotnet-trx
         fail-on-error: true
-    
-    - name: Create a Zip package 🐙
+        
+    - name: Create a NuGet package
+      id: create-nuget-package
       if: ${{ matrix.package }}
-      id: create-zip-package
-      uses: OctopusDeploy/create-zip-package-action@v3
-      with:
-        package_id: ${{ steps.build.outputs.package_id }}
-        version: ${{ steps.build-info.outputs.version }}
-        output_folder: './packaging'
-        base_path: ${{ steps.build.outputs.output }}
-        files: |
-          **/*.*
+      shell: pwsh
+      run: |
+        dotnet pack ${{ env.project-file }} --configuration ${{ env.configuration }} --no-build --no-restore -p:PackageId=${{ steps.build.outputs.package_id }} -p:PackageVersion=${{ steps.build-info.outputs.version }} -p:Authors="Dave Boster" --verbosity detailed --output ./packaging -p:OutputPath=${{ steps.build.outputs.output }}
+        echo "package_filename=${{ steps.build.outputs.package_id }}.${{ steps.build-info.outputs.version }}.nupkg" >> $env:GITHUB_OUTPUT
+        echo "package_file_path=${{ env.package-output }}/${{ steps.build.outputs.package_id }}.${{ steps.build-info.outputs.version }}.nupkg" >> $env:GITHUB_OUTPUT
+
+    - name: Prep packages
+      shell: pwsh
+      run: |
+        dotnet nuget add source --username ${{ github.repository_owner }} --password ${{ secrets.PACKAGE_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
+  
+    - name: Push package to GitHub packages 
+      shell: pwsh
+      run: |
+        dotnet nuget push ./packaging/${{ steps.create-nuget-package.outputs.package_filename  }} --api-key ${{ secrets.PACKAGE_TOKEN }}  --source "github"
+
+    
+    # - name: Create a Zip package 🐙
+    #   if: ${{ matrix.package }}
+    #   id: create-zip-package
+    #   uses: OctopusDeploy/create-zip-package-action@v3
+    #   with:
+    #     package_id: ${{ steps.build.outputs.package_id }}
+    #     version: ${{ steps.build-info.outputs.version }}
+    #     output_folder: './packaging'
+    #     base_path: ${{ steps.build.outputs.output }}
+    #     files: |
+    #       **/*.*
+
+    # - name: Create a NuGet package
+    # id: create-nuget-package
+    # if: ${{ matrix.package }}
+    # shell: pwsh
+    # run: |
+    #   dotnet pack ${{ env.project-file }} --configuration ${{ env.configuration }} --no-build --no-restore -p:PackageId=${{ steps.build.outputs.package_id }} -p:PackageVersion=${{ steps.build-info.outputs.version }} -p:Authors="Dave Boster" --verbosity detailed --output ./packaging -p:OutputPath=${{ steps.build.outputs.output }}
+    #   echo "package_filename=${{ steps.build.outputs.package_id }}.${{ steps.build-info.outputs.version }}.nupkg" >> $env:GITHUB_OUTPUT
+    #   echo "package_file_path=${{ env.package-output }}/${{ steps.build.outputs.package_id }}.${{ steps.build-info.outputs.version }}.nupkg" >> $env:GITHUB_OUTPUT
 
     # - name: Create a NuGet package 🐙
     #   if: ${{ matrix.publish }}
@@ -123,58 +155,50 @@ jobs:
     #     nuspec_authors: |
     #       Dave Boster
     
-    - name: Create a NuGet package
-      id: create-nuget-package
-      if: ${{ matrix.package }}
-      shell: pwsh
-      run: |
-        dotnet pack ${{ env.project-file }} --configuration ${{ env.configuration }} --no-build --no-restore -p:PackageId=${{ steps.build.outputs.package_id }} -p:PackageVersion=${{ steps.build-info.outputs.version }} -p:Authors="Dave Boster" --verbosity detailed --output ./packaging -p:OutputPath=${{ steps.build.outputs.output }}
-        echo "package_filename=${{ steps.build.outputs.package_id }}.${{ steps.build-info.outputs.version }}.nupkg" >> $env:GITHUB_OUTPUT
-        echo "package_file_path=${{ env.package-output }}/${{ steps.build.outputs.package_id }}.${{ steps.build-info.outputs.version }}.nupkg" >> $env:GITHUB_OUTPUT
 
-    - name: Upload Zip package to build artifacts 🗳️
-      if: ${{ matrix.package }}
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ steps.create-zip-package.outputs.package_filename }}
-        path: ${{ steps.create-zip-package.outputs.package_file_path }}
-        retention-days: 1
+    # - name: Upload Zip package to build artifacts 🗳️
+    #   if: ${{ matrix.package }}
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: ${{ steps.create-zip-package.outputs.package_filename }}
+    #     path: ${{ steps.create-zip-package.outputs.package_file_path }}
+    #     retention-days: 1
 
-    - name: Upload NuGet package to build artifacts 🗳️
-      if: ${{ matrix.package }}
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ steps.create-nuget-package.outputs.package_filename }}
-        path: ${{ steps.create-nuget-package.outputs.package_file_path }}
-        retention-days: 1
+    # - name: Upload NuGet package to build artifacts 🗳️
+    #   if: ${{ matrix.package }}
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: ${{ steps.create-nuget-package.outputs.package_filename }}
+    #     path: ${{ steps.create-nuget-package.outputs.package_file_path }}
+    #     retention-days: 1
 
-  publish:
-    # if: github.event_name == 'pull_request' && github.event.action == 'closed'
-    runs-on: ubuntu-latest
-    needs: build
-    name: Publish Packages
-    steps:
-      - name: Download zip package
-        uses: actions/download-artifact@v3
-        with:
-          name: ${{ needs.build.outputs.zip_package_artifact }}
-          path: './packaging'
+  # publish:
+  #   # if: github.event_name == 'pull_request' && github.event.action == 'closed'
+  #   runs-on: ubuntu-latest
+  #   needs: build
+  #   name: Publish Packages
+  #   steps:
+  #     - name: Download zip package
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: ${{ needs.build.outputs.zip_package_artifact }}
+  #         path: './packaging'
 
-      - name: Download NuGet package
-        uses: actions/download-artifact@v3
-        with:
-          name: ${{ needs.build.outputs.nuget_package_artifact }}
-          path: './packaging'
+  #     - name: Download NuGet package
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: ${{ needs.build.outputs.nuget_package_artifact }}
+  #         path: './packaging'
 
-      - name: Prep packages
-        shell: pwsh
-        run: |
-          dotnet nuget add source --username ${{ github.repository_owner }} --password ${{ secrets.PACKAGE_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
+  #     - name: Prep packages
+  #       shell: pwsh
+  #       run: |
+  #         dotnet nuget add source --username ${{ github.repository_owner }} --password ${{ secrets.PACKAGE_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
 
-      - name: Push package to GitHub packages 
-        shell: pwsh
-        run: |
-          dotnet nuget push ./packaging/${{ needs.build.outputs.nuget_package_artifact }} --api-key ${{ secrets.PACKAGE_TOKEN }}  --source "github"
+  #     - name: Push package to GitHub packages 
+  #       shell: pwsh
+  #       run: |
+  #         dotnet nuget push ./packaging/${{ needs.build.outputs.nuget_package_artifact }} --api-key ${{ secrets.PACKAGE_TOKEN }}  --source "github"
     
 #  tests_e2e:
 #    uses: ./.github/workflows/tests-e2e-playwright.yml
