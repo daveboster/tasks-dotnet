@@ -103,7 +103,7 @@ jobs:
       if: ${{ matrix.package }}
       shell: pwsh
       run: |
-        dotnet pack ${{ env.project-file }} --configuration ${{ env.configuration }} --no-build --no-restore -p:PackageId=${{ steps.build.outputs.package_id }} -p:PackageVersion=${{ steps.build-info.outputs.version }} -p:Authors="Dave Boster" --verbosity detailed --output ./packaging -p:OutputPath=${{ steps.build.outputs.output }}
+        dotnet pack ${{ env.project-file }} --configuration ${{ env.configuration }} --no-build --no-restore -p:PackageId=${{ steps.build.outputs.package_id }} -p:PackageVersion=${{ steps.build-info.outputs.version }} -p:Authors="Dave Boster" --output ./packaging -p:OutputPath=${{ steps.build.outputs.output }}
         echo "package_filename=${{ steps.build.outputs.package_id }}.${{ steps.build-info.outputs.version }}.nupkg" >> $env:GITHUB_OUTPUT
         echo "package_file_path=${{ env.package-output }}/${{ steps.build.outputs.package_id }}.${{ steps.build-info.outputs.version }}.nupkg" >> $env:GITHUB_OUTPUT
 
