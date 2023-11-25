@@ -21,7 +21,6 @@ on:
 permissions:
   statuses: write
   checks: write
-  packages: write
 
 # https://docs.github.com/en/actions/learn-github-actions/variables
 env:
@@ -36,6 +35,8 @@ jobs:
   build:
     name: Build
     runs-on: ${{ matrix.os }}
+    permissions:
+      packages: write
     strategy:
       matrix:
         os: [ubuntu-latest] # [ubuntu-latest, windows-latest]
