@@ -1,0 +1,22 @@
+name: .NET SDK
+
+on:
+  push:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Run Rest-Api Helper Unit and Integration Tests
+      shell: pwsh
+      run: |
+        src/Import-Pester.ps1
+        Invoke-Pester src/
