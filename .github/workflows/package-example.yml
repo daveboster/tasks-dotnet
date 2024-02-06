@@ -17,3 +17,9 @@ jobs:
         if: ${{ env.CREATE_PACKAGE == 'true' }}
         run: |
           echo "package_version=$(date +'%Y.%m.%d').$GITHUB_RUN_NUMBER" >> $GITHUB_ENV
+  
+      - name: Create Package 
+        id: package-create
+        if: ${{ env.CREATE_PACKAGE == 'true' }}
+        run: |
+          echo "Version: ${{ steps.package-info.outputs.package_version }}"
