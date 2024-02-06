@@ -17,7 +17,7 @@ jobs:
         if: ${{ env.CREATE_PACKAGE == 'true' }}
         shell: pwsh
         run: |
-          echo "package_version=$(date +'%Y.%m.%d').$GITHUB_RUN_NUMBER" >> $env:GITHUB_OUTPUT
+          echo "package_version=$(date +'%Y.%m.%d').$env:GITHUB_RUN_NUMBER" >> $env:GITHUB_OUTPUT
   
       - name: Create Package 
         id: package_create
