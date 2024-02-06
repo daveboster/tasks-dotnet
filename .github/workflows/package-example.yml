@@ -13,13 +13,13 @@ jobs:
 
     steps:
       - name: Set Package Metadata 📋
-        id: package-info
+        id: package_info
         if: ${{ env.CREATE_PACKAGE == 'true' }}
         run: |
           echo "package_version=$(date +'%Y.%m.%d').$GITHUB_RUN_NUMBER" >> $GITHUB_OUTPUT
   
       - name: Create Package 
-        id: package-create
+        id: package_create
         if: ${{ env.CREATE_PACKAGE == 'true' }}
         run: |
-          echo "Version: ${{ steps.package-info.outputs.package_version }}"
+          echo "Version: ${{ steps.package_info.outputs.package_version }}"
