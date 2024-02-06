@@ -1,0 +1,19 @@
+name: package-example
+
+on:
+  push:
+
+env:
+  RUN_TESTS: false
+  CREATE_PACKAGE: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Set Package Metadata 📋
+        id: package-info
+        if: ${{ env.CREATE_PACKAGE == 'true' }}
+        run: |
+          echo "package_version=$(date +'%Y.%m.%d').$GITHUB_RUN_NUMBER" >> $GITHUB_ENV
