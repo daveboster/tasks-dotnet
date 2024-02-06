@@ -22,4 +22,5 @@ jobs:
         id: package_create
         if: ${{ env.CREATE_PACKAGE == 'true' }}
         run: |
-          echo "Version: ${{ steps.package_info.outputs.package_version }}"
+          echo Version: ${{ steps.package_info.outputs.package_version }}
+          echo ${{join(steps.package_info.outputs.*, '\n')}}
